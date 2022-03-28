@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class Game
-  @@scores = Hash.new(0)
-
+  
   def initialize()
+    @scores = Hash.new(0)
     self.board = Array.new(3){Array.new(3)}
     puts "Please enter your name, Player 1:"
     @player1 = Player.new(gets.chomp)
@@ -27,9 +27,9 @@ class Game
     if turn == 10
       puts "There was no winner by turn 9."
     end
-    @@scores[active_player] += 1
+    @scores[active_player] += 1
     puts "Congratulations! #{active_player.name} won!"
-    puts "The score is #{@@scores[active_player]} for #{active_player.name} and #{@@scores[passive_player]} for #{passive_player.name}."
+    puts "The score is #{@scores[active_player]} for #{active_player.name} and #{@scores[passive_player]} for #{passive_player.name}."
     self.reinitialize
   end
 
