@@ -29,7 +29,8 @@ class Game
     end
     @@scores[active_player] += 1
     puts "Congratulations! #{active_player.name} won!"
-    puts "The score is #{@@scores[active_player]} for #{active_player.name} to #{@@scores[passive_player]} for #{passive_player.name}."
+    puts "The score is #{@@scores[active_player]} for #{active_player.name} and #{@@scores[passive_player]} for #{passive_player.name}."
+    self.reinitialize
   end
 
   protected
@@ -47,7 +48,21 @@ class Game
     active_player.moves.push(active_player.class.points_map[move[0]-1][move[1]-1])
   end
 
-
+  def reinitialize
+    puts "Do you want to play again? Y/N"
+    ans = gets.chomp
+    if ans.casecmp('y') == 0
+      @player1.moves.clear
+      @player2.moves.clear
+      self.board = Array.new(3){Array.new(3)}
+      puts "Okay! Let's go again!"
+      sleep 2
+      self.run_match
+    else
+      sleep 2
+      puts "Alright! See you and have a great day!"
+    end
+  end
 end
 
 class Player
