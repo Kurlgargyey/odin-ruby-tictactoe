@@ -4,7 +4,7 @@
 class Game
   def initialize
     @scores = Hash.new(0)
-    self.board = Array.new(3) { Array.new(3) }
+    self.board = Array.new(3) { Array.new(3, '-') }
     puts 'Please enter your name, Player 1:'
     @player1 = Player.new(gets.chomp)
     puts 'Please enter your name, Player 2:'
@@ -15,15 +15,8 @@ class Game
     turn = 1
     active_player = @player1
     passive_player = @player2
-    until turn == 10
-      puts "Turn #{turn}:"
-      process_turn(active_player, passive_player)
-      break if active_player.winner?
-
-      turn += 1
-      active_player, passive_player = passive_player, active_player
-    end
-    game_over(turn, active_player, passive_player)
+    draw_board
+    game_loop(turn, active_player, passive_player)
   end
 
   protected
@@ -33,17 +26,42 @@ class Game
   def draw_move(player, move)
     case player
     when @player1
-      board[move[0] - 1][move[1] - 1] = 'X'
+      board[move[1] - 1][move[0] - 1] = 'X'
     when @player2
-      board[move[0] - 1][move[1] - 1] = 'O'
+      board[move[1] - 1][move[0] - 1] = 'O'
     end
+    draw_board
+  end
+
+  def draw_board
+    board.reverse.each_with_index do |row, idx|
+      print "#{3 - idx}    "
+      row.each do |col|
+        print "#{col} "
+      end
+      print "\n"
+    end
+    puts ' '
+    puts '     1 2 3 '
   end
 
   def process_turn(active_player,passive_player)
     puts "It's #{active_player.name}'s turn! Pick a field!"
     move = active_player.make_move(passive_player)
     draw_move(active_player, move)
-    active_player.moves.push(active_player.points_map[move[0] - 1][move[1] - 1])
+    active_player.moves.push(active_player.points_map[move[1] - 1][move[0] - 1])
+  end
+
+  def game_loop(turn, active_player, passive_player)
+    until turn == 10
+      puts "Turn #{turn}:"
+      process_turn(active_player, passive_player)
+      break if active_player.winner?
+
+      turn += 1
+      active_player, passive_player = passive_player, active_player
+    end
+    game_over(turn, active_player, passive_player)
   end
 
   def clear_game
@@ -109,7 +127,7 @@ class Player
   protected
 
   def check_moves(move)
-    moves.include?(self.points_map[move[0] - 1][move[1] - 1])
+    moves.include?(points_map[move[1] - 1][move[0] - 1])
   end
 
   private
