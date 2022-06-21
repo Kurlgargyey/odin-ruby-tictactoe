@@ -5,23 +5,21 @@ class Game
   def initialize
     @scores = Hash.new(0)
     self.board = Array.new(3) { Array.new(3, '-') }
+    @turn = 1
+  end
+
+  def run_match
     puts 'Please enter your name, Player 1:'
     @player1 = Player.new(gets.chomp)
     puts 'Please enter your name, Player 2:'
     @player2 = Player.new(gets.chomp)
-  end
-
-  def run_match
-    turn = 1
-    active_player = @player1
-    passive_player = @player2
     draw_board
-    game_loop(turn, active_player, passive_player)
+    game_loop
   end
 
-  protected
+  # protected
 
-  attr_accessor :board
+  attr_accessor :board, :turn
 
   def draw_move(player, move)
     case player
@@ -45,29 +43,29 @@ class Game
     puts '     1 2 3 '
   end
 
-  def process_turn(active_player,passive_player)
+  def process_turn(active_player, passive_player)
     puts "It's #{active_player.name}'s turn! Pick a field!"
     move = active_player.make_move(passive_player)
     draw_move(active_player, move)
     active_player.moves.push(active_player.points_map[move[1] - 1][move[0] - 1])
   end
 
-  def game_loop(turn, active_player, passive_player)
-    until turn == 10
+  def game_loop(active_player = @player1, passive_player = @player2)
+    until turn > 9
       puts "Turn #{turn}:"
       process_turn(active_player, passive_player)
       break if active_player.winner?
 
-      turn += 1
+      self.turn += 1
       active_player, passive_player = passive_player, active_player
     end
-    game_over(turn, active_player, passive_player)
+    game_over(active_player, passive_player)
   end
 
   def clear_game
     @player1.moves.clear
     @player2.moves.clear
-    self.board = Array.new(3){ Array.new(3) }
+    self.board = Array.new(3) { Array.new(3) }
   end
 
   def reinitialize
@@ -83,7 +81,7 @@ class Game
     end
   end
 
-  def game_over(turn, winner, loser)
+  def game_over(winner, loser)
     puts 'There was no winner by turn 9.' if turn == 10
     @scores[winner] += 1
     puts "Congratulations! #{winner.name} won!"
@@ -124,13 +122,13 @@ class Player
     false
   end
 
-  protected
+  # protected
 
   def check_moves(move)
     moves.include?(points_map[move[1] - 1][move[0] - 1])
   end
 
-  private
+  # private
 
   def input_move
     input = +''
@@ -143,5 +141,5 @@ class Player
   end
 end
 
-match = Game.new
-match.run_match
+# match = Game.new
+# match.run_match
